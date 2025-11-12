@@ -15,14 +15,12 @@
       --radius: 22px;
       --card-w: 420px;
     }
-
     *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
     html,body{height:100%;}
     body{
       background: radial-gradient(circle at 20% 10%, #071026 0%, #000 60%);
       display:flex;align-items:center;justify-content:center;color:var(--text);height:100vh;overflow:hidden;padding:20px;
     }
-
     .card{
       width:var(--card-w);max-width:96vw;padding:28px;border-radius:28px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
       box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(60,130,255,0.04) inset;
@@ -30,33 +28,21 @@
       transform-style:preserve-3d;transition:transform 200ms ease, box-shadow 200ms ease;
       position:relative;overflow:visible;
     }
-
-    .glow{
-      position:absolute;inset:-40px;border-radius:30px;filter:blur(30px);pointer-events:none;background:radial-gradient(closest-side, rgba(90,140,255,0.08), transparent 40%);
-    }
-
+    .glow{position:absolute;inset:-40px;border-radius:30px;filter:blur(30px);pointer-events:none;background:radial-gradient(closest-side, rgba(90,140,255,0.08), transparent 40%);}
     h1{font-size:1.35rem;font-weight:600;margin-bottom:8px;letter-spacing:0.4px;}
     #sub{font-size:0.86rem;color:var(--muted);margin-bottom:14px}
-
     #time{font-size:2.6rem;font-weight:700;text-shadow:0 6px 22px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.03);margin-bottom:6px}
     #tzLabel{font-size:0.92rem;color:var(--muted);}
-
-    .controls{
-      margin-top:18px;display:flex;flex-direction:column;gap:10px;transform:translateZ(40px);transition:transform 220ms cubic-bezier(.2,.8,.2,1);
-    }
-
+    .controls{margin-top:18px;display:flex;flex-direction:column;gap:10px;transform:translateZ(40px);transition:transform 220ms cubic-bezier(.2,.8,.2,1);}
     .select, input[type="text"], button{
       -webkit-appearance:none;appearance:none;border:0;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
       outline:none;color:var(--text);font-size:0.95rem;backdrop-filter: blur(6px);
       border:1px solid rgba(255,255,255,0.04);
     }
-
     select.select{height:44px}
-    select.select option{color:#000} /* options in native dropdown */
-
+    select.select option{color:#000}
     .row{display:flex;gap:10px}
     .row .flex{flex:1}
-
     .generate{
       display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;
       transition:transform 160ms ease, background 160ms ease;
@@ -65,242 +51,174 @@
     }
     .generate:active{transform:translateY(1px)}
     .generate[disabled]{opacity:0.45;cursor:not-allowed}
-
     .links{display:flex;gap:10px;justify-content:center;margin-top:18px}
     .link-tile{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));text-decoration:none;color:var(--text);font-size:0.92rem;border:1px solid rgba(255,255,255,0.04)}
     .link-tile img{width:18px;height:18px}
-
     .meta{margin-top:10px;font-size:0.82rem;color:var(--muted);}
-
-    /* small helper tooltip */
     .hint{font-size:0.84rem;color:var(--muted);opacity:0.9}
-
-    /* subtle follow cursor area */
     .card:before{content:"";position:absolute;left:-30%;top:-30%;width:160%;height:160%;pointer-events:none;background:radial-gradient(600px 300px at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.02), transparent 12%);border-radius:30px;transition:background-position 220ms linear}
-
     @media (max-width:520px){#time{font-size:2.2rem}.card{padding:20px;border-radius:18px}}
   </style>
 </head>
 <body>
-  <div class="card" id="card" role="region" aria-label="Time portal card">
+  <div class="card" id="card">
     <div class="glow"></div>
-
     <h1 id="title">Welcome to the Time Portal</h1>
-    <div id="sub">Select a European country to see its local time</div>
-
+    <div id="sub">Select a country to see its local time</div>
     <div id="time">--:--:--</div>
     <div id="tzLabel">Loading…</div>
 
     <div class="controls" id="controls">
       <select id="country" class="select" aria-label="Select country">
-        <option value="">Select your European country</option>
-        <option>United Kingdom</option>
-        <option>France</option>
-        <option>Germany</option>
-        <option>Spain</option>
-        <option>Italy</option>
-        <option>Poland</option>
-        <option>Netherlands</option>
-        <option>Sweden</option>
-        <option>Norway</option>
-        <option>Finland</option>
-        <option>Denmark</option>
-        <option>Switzerland</option>
-        <option>Austria</option>
-        <option>Ireland</option>
-        <option>Portugal</option>
-        <option>Belgium</option>
+        <option value="">Select your country</option>
       </select>
-
       <div class="row">
-        <input id="nameInput" type="text" placeholder="Enter your name (optional)" aria-label="Name">
-        <button id="generateBtn" class="generate" aria-live="polite" disabled>Generate Link</button>
+        <input id="nameInput" type="text" placeholder="Enter your name (optional)">
+        <button id="generateBtn" class="generate" disabled>Generate Link</button>
       </div>
-
-      <div class="meta">
-        <span class="hint" id="statusHint">Choose a country to enable link generation.</span>
-      </div>
+      <div class="meta"><span class="hint" id="statusHint">Choose a country to enable link generation.</span></div>
     </div>
 
-    <div class="links" aria-hidden="false">
-      <a class="link-tile" href="https://fwweah.github.io/time" target="_blank" rel="noopener noreferrer">🌐 <span>fwweah.github.io/time</span></a>
-      <a class="link-tile" href="https://feds.lol/fweah" target="_blank" rel="noopener noreferrer">👤 <span>feds.lol/fweah</span></a>
+    <div class="links">
+      <a class="link-tile" href="https://fwweah.github.io/time" target="_blank">🌐 <span>fwweah.github.io/time</span></a>
+      <a class="link-tile" href="https://feds.lol/fweah" target="_blank">👤 <span>feds.lol/fweah</span></a>
     </div>
   </div>
 
   <script>
-    // Country -> representative IANA timezone map (Europe)
-    const TZ = {
-      'United Kingdom': 'Europe/London',
-      'France': 'Europe/Paris',
-      'Germany': 'Europe/Berlin',
-      'Spain': 'Europe/Madrid',
-      'Italy': 'Europe/Rome',
-      'Poland': 'Europe/Warsaw',
-      'Netherlands': 'Europe/Amsterdam',
-      'Sweden': 'Europe/Stockholm',
-      'Norway': 'Europe/Oslo',
-      'Finland': 'Europe/Helsinki',
-      'Denmark': 'Europe/Copenhagen',
-      'Switzerland': 'Europe/Zurich',
-      'Austria': 'Europe/Vienna',
-      'Ireland': 'Europe/Dublin',
-      'Portugal': 'Europe/Lisbon',
-      'Belgium': 'Europe/Brussels'
-    };
-
-    const card = document.getElementById('card');
+    const countrySelect = document.getElementById('country');
     const timeEl = document.getElementById('time');
     const tzLabel = document.getElementById('tzLabel');
-    const countrySelect = document.getElementById('country');
-    const nameInput = document.getElementById('nameInput');
     const generateBtn = document.getElementById('generateBtn');
+    const nameInput = document.getElementById('nameInput');
     const title = document.getElementById('title');
     const sub = document.getElementById('sub');
     const statusHint = document.getElementById('statusHint');
-
     let selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     let viewerMode = false;
 
-    // read params
+    // country → timezone from Intl API
+    const allTZs = Intl.supportedValuesOf('timeZone');
+    const countryMap = {};
+    for (const tz of allTZs) {
+      const [continent, city] = tz.split('/');
+      if (!continent || !city) continue;
+      const name = city.replace(/_/g, ' ');
+      if (!countryMap[continent]) countryMap[continent] = [];
+      countryMap[continent].push({ country: name, tz });
+    }
+
+    // Populate dropdown with continents as groups
+    for (const [continent, arr] of Object.entries(countryMap)) {
+      const group = document.createElement('optgroup');
+      group.label = continent;
+      arr.sort((a,b)=>a.country.localeCompare(b.country));
+      for (const { country, tz } of arr) {
+        const opt = document.createElement('option');
+        opt.value = tz;
+        opt.textContent = country;
+        group.appendChild(opt);
+      }
+      countrySelect.appendChild(group);
+    }
+
     const params = new URLSearchParams(window.location.search);
     const countryParam = params.get('country');
     const nameParam = params.get('name');
 
-    function setViewerMode(countryName, name){
+    function setViewerMode(countryName, name) {
       viewerMode = true;
-      // display name's time
       if (name) title.textContent = `${decodeURIComponent(name)}'s Time`;
       sub.textContent = `${countryName} — viewer mode`;
-      // lock controls
       countrySelect.disabled = true;
       nameInput.disabled = true;
       generateBtn.disabled = true;
-      // set selection visually
-      countrySelect.value = countryName;
       nameInput.value = decodeURIComponent(name || '');
     }
 
-    function updateTZLabel(tz){
-      try{
+    function updateTZLabel(tz) {
+      try {
         const now = new Date();
         const fmt = new Intl.DateTimeFormat('en-GB', {timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
-        // we want something like "Europe/Paris (UTC+1)"
         const parts = fmt.formatToParts(now);
         const tzShort = parts.find(p=>p.type==='timeZoneName')?.value || tz;
         tzLabel.textContent = `${tz} • ${tzShort}`;
-      }catch(e){
-        tzLabel.textContent = tz;
-      }
+      } catch { tzLabel.textContent = tz; }
     }
 
-    function updateTime(){
-      try{
+    function updateTime() {
+      try {
         const now = new Date();
         const opts = {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: selectedTZ};
-        const timeString = new Intl.DateTimeFormat('en-GB', opts).format(now);
-        timeEl.textContent = timeString;
-      }catch(e){
-        timeEl.textContent = '--:--:--';
-      }
+        timeEl.textContent = new Intl.DateTimeFormat('en-GB', opts).format(now);
+      } catch { timeEl.textContent = '--:--:--'; }
     }
 
-    // enable button when country chosen
-    countrySelect.addEventListener('change', ()=>{
-      const v = countrySelect.value;
-      if(!v){ generateBtn.disabled = true; statusHint.textContent = 'Choose a country to enable link generation.'; }
-      else{ generateBtn.disabled = false; statusHint.textContent = 'Click generate to copy a shareable link.'; }
-      if(v && TZ[v]){
-        selectedTZ = TZ[v];
-        updateTZLabel(selectedTZ);
-        updateTime();
-      }
+    countrySelect.addEventListener('change', () => {
+      const tz = countrySelect.value;
+      if (!tz) { generateBtn.disabled = true; statusHint.textContent = 'Choose a country to enable link generation.'; return; }
+      selectedTZ = tz;
+      generateBtn.disabled = false;
+      updateTZLabel(selectedTZ);
+      updateTime();
+      statusHint.textContent = 'Click generate to copy a shareable link.';
     });
 
-    // generate link and copy without alert. Smoothly change button text.
-    generateBtn.addEventListener('click', async ()=>{
-      const country = countrySelect.value;
+    generateBtn.addEventListener('click', async () => {
+      const tz = countrySelect.value;
       const name = nameInput.value.trim();
-      if(!country) return;
+      if (!tz) return;
+      const countryName = tz.split('/').pop().replace(/_/g,' ');
       const base = window.location.origin + window.location.pathname;
-      const link = `${base}?country=${encodeURIComponent(country)}${name?`&name=${encodeURIComponent(name)}`:''}`;
-      try{
+      const link = `${base}?country=${encodeURIComponent(countryName)}${name?`&name=${encodeURIComponent(name)}`:''}`;
+      try {
         await navigator.clipboard.writeText(link);
         const old = generateBtn.textContent;
         generateBtn.textContent = 'Copied!';
         generateBtn.disabled = true;
-        setTimeout(()=>{ generateBtn.textContent = old; generateBtn.disabled = false; }, 2000);
-      }catch(e){
-        // fallback: select and prompt (rare)
+        setTimeout(()=>{ generateBtn.textContent = old; generateBtn.disabled = false; },2000);
+      } catch {
         const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select();
-        try{ document.execCommand('copy'); }
-        finally{ ta.remove(); }
+        try { document.execCommand('copy'); } finally { ta.remove(); }
       }
     });
 
-    // initialize page based on params
+    // Init from params
     (function initFromParams(){
-      if(countryParam && TZ[countryParam]){
-        selectedTZ = TZ[countryParam];
+      if (countryParam) {
+        const matchTZ = allTZs.find(z=>z.toLowerCase().includes(countryParam.toLowerCase().replace(/ /g,'_')));
+        if (matchTZ) {
+          selectedTZ = matchTZ;
+          countrySelect.value = selectedTZ;
+          updateTZLabel(selectedTZ);
+          updateTime();
+          setViewerMode(countryParam, nameParam);
+        }
+      } else {
+        selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
         updateTZLabel(selectedTZ);
         updateTime();
-        // viewer mode
-        setViewerMode(countryParam, nameParam);
-      }else{
-        // default to user's timezone on load
-        selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
-        updateTZLabel(selectedTZ);
-        // if we can infer country, preselect United Kingdom if timezone is Europe/London
-        for(const k in TZ){ if(TZ[k]===selectedTZ){ countrySelect.value = k; break; } }
-        if(countrySelect.value) generateBtn.disabled = false;
+        countrySelect.value = selectedTZ;
       }
     })();
 
-    // tick every second
-    updateTime();
     setInterval(updateTime, 1000);
 
-    // 3D tilt + nice follow of inner menu (parallax)
+    // 3D tilt
+    const card = document.getElementById('card');
     card.addEventListener('mousemove', (ev)=>{
       const rect = card.getBoundingClientRect();
-      const cx = rect.left + rect.width/2;
-      const cy = rect.top + rect.height/2;
-      const dx = ev.clientX - cx;
-      const dy = ev.clientY - cy;
-      const px = dx / rect.width;
-      const py = dy / rect.height;
-
-      // rotate limits
-      const rotY = px * 10; // deg
-      const rotX = -py * 10;
-      card.style.transform = `perspective(900px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
-      // small parallax for inner controls
-      const controls = document.getElementById('controls');
-      const translateX = px * 14; // px
-      const translateY = py * 10;
-      controls.style.transform = `translateZ(40px) translate(${translateX}px, ${translateY}px)`;
-
-      // move subtle background radial based on mouse inside card
-      const mx = ((ev.clientX - rect.left) / rect.width) * 100;
-      const my = ((ev.clientY - rect.top) / rect.height) * 100;
-      card.style.setProperty('--mx', mx + '%');
-      card.style.setProperty('--my', my + '%');
+      const px = (ev.clientX - rect.left - rect.width/2)/rect.width;
+      const py = (ev.clientY - rect.top - rect.height/2)/rect.height;
+      card.style.transform = `perspective(900px) rotateY(${px*10}deg) rotateX(${-py*10}deg)`;
+      document.getElementById('controls').style.transform = `translateZ(40px) translate(${px*14}px, ${py*10}px)`;
+      card.style.setProperty('--mx', ((ev.clientX-rect.left)/rect.width*100)+'%');
+      card.style.setProperty('--my', ((ev.clientY-rect.top)/rect.height*100)+'%');
     });
-
     card.addEventListener('mouseleave', ()=>{
-      card.style.transform = '';
-      document.getElementById('controls').style.transform = 'translateZ(40px)';
+      card.style.transform='';
+      document.getElementById('controls').style.transform='translateZ(40px)';
     });
-
-    // If page opened with ?country=Name&name=Name, show locked viewer mode values clearly
-    if(viewerMode){
-      // already set in initFromParams
-    }
-
-    // Accessibility: keyboard change
-    countrySelect.addEventListener('keyup', ()=>countrySelect.dispatchEvent(new Event('change')));
-
   </script>
 </body>
 </html>
-
