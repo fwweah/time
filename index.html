@@ -1,135 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Time Portal</title>
-  <link rel="icon" href="https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea5489be478613512121_43.png" type="image/png" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Time Portal — Final (v2 Professional Edition)</title>
+  <link rel="icon" href="https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea5489be478613512121_43.png" type="image/png">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
+    :root{
+      --glass: rgba(255,255,255,0.06);
+      --glass-strong: rgba(255,255,255,0.12);
+      --accent: rgba(130,180,255,0.12);
+      --text: #FFFFFF;
+      --muted: rgba(255,255,255,0.7);
+      --radius: 22px;
+      --card-w: 420px;
     }
 
-    body {
-      background: radial-gradient(circle at top, #0a0a0a 0%, #000 100%);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: white;
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    html,body{height:100%;}
+    body{
+      background: radial-gradient(circle at 20% 10%, #071026 0%, #000 60%);
+      display:flex;align-items:center;justify-content:center;color:var(--text);height:100vh;overflow:hidden;padding:20px;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border-radius: 30px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
-      width: 400px;
-      max-width: 90vw;
-      padding: 2rem;
-      text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      transform-style: preserve-3d;
+    .card{
+      width:var(--card-w);max-width:96vw;padding:28px;border-radius:28px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(60,130,255,0.04) inset;
+      backdrop-filter: blur(12px) saturate(120%);
+      transform-style:preserve-3d;transition:transform 200ms ease, box-shadow 200ms ease;
+      position:relative;overflow:visible;
     }
 
-    h1 {
-      font-size: 1.6rem;
-      opacity: 0.8;
-      letter-spacing: 1px;
+    .glow{
+      position:absolute;inset:-40px;border-radius:30px;filter:blur(30px);pointer-events:none;background:radial-gradient(closest-side, rgba(90,140,255,0.08), transparent 40%);
     }
 
-    #time {
-      font-size: 2.8rem;
-      font-weight: 600;
-      margin: 15px 0;
-      color: #ffffff;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    h1{font-size:1.35rem;font-weight:600;margin-bottom:8px;letter-spacing:0.4px;}
+    #sub{font-size:0.86rem;color:var(--muted);margin-bottom:14px}
+
+    #time{font-size:2.6rem;font-weight:700;text-shadow:0 6px 22px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.03);margin-bottom:6px}
+    #tzLabel{font-size:0.92rem;color:var(--muted);}
+
+    .controls{
+      margin-top:18px;display:flex;flex-direction:column;gap:10px;transform:translateZ(40px);transition:transform 220ms cubic-bezier(.2,.8,.2,1);
     }
 
-    #location {
-      font-size: 1rem;
-      opacity: 0.7;
+    .select, input[type="text"], button{
+      -webkit-appearance:none;appearance:none;border:0;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      outline:none;color:var(--text);font-size:0.95rem;backdrop-filter: blur(6px);
+      border:1px solid rgba(255,255,255,0.04);
     }
 
-    .input-group {
-      margin-top: 25px;
-    }
+    select.select{height:44px}
+    select.select option{color:#000} /* options in native dropdown */
 
-    select, input {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      margin-bottom: 10px;
-      font-size: 0.95rem;
-      outline: none;
-    }
+    .row{display:flex;gap:10px}
+    .row .flex{flex:1}
 
-    button {
-      background: rgba(255, 255, 255, 0.15);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 500;
-      transition: 0.3s;
+    .generate{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;
+      transition:transform 160ms ease, background 160ms ease;
+      background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.03));
+      border:1px solid rgba(255,255,255,0.06);
     }
+    .generate:active{transform:translateY(1px)}
+    .generate[disabled]{opacity:0.45;cursor:not-allowed}
 
-    button:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
+    .links{display:flex;gap:10px;justify-content:center;margin-top:18px}
+    .link-tile{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));text-decoration:none;color:var(--text);font-size:0.92rem;border:1px solid rgba(255,255,255,0.04)}
+    .link-tile img{width:18px;height:18px}
 
-    .links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 25px;
-    }
+    .meta{margin-top:10px;font-size:0.82rem;color:var(--muted);}
 
-    .link-tile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 15px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 15px;
-      text-decoration: none;
-      color: white;
-      font-size: 0.9rem;
-      transition: 0.3s ease;
-    }
+    /* small helper tooltip */
+    .hint{font-size:0.84rem;color:var(--muted);opacity:0.9}
 
-    .link-tile:hover {
-      transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.15);
-    }
+    /* subtle follow cursor area */
+    .card:before{content:"";position:absolute;left:-30%;top:-30%;width:160%;height:160%;pointer-events:none;background:radial-gradient(600px 300px at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.02), transparent 12%);border-radius:30px;transition:background-position 220ms linear}
 
-    .link-tile img {
-      width: 18px;
-      height: 18px;
-    }
-
-    @keyframes glow {
-      from { box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); }
-      to { box-shadow: 0 0 30px rgba(255, 255, 255, 0.25); }
-    }
+    @media (max-width:520px){#time{font-size:2.2rem}.card{padding:20px;border-radius:18px}}
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <h1 id="greeting">Welcome to the Time Portal</h1>
-    <div id="time">--:--:--</div>
-    <div id="location">Loading location...</div>
+  <div class="card" id="card" role="region" aria-label="Time portal card">
+    <div class="glow"></div>
 
-    <div class="input-group">
-      <select id="country">
+    <h1 id="title">Welcome to the Time Portal</h1>
+    <div id="sub">Select a European country to see its local time</div>
+
+    <div id="time">--:--:--</div>
+    <div id="tzLabel">Loading…</div>
+
+    <div class="controls" id="controls">
+      <select id="country" class="select" aria-label="Select country">
         <option value="">Select your European country</option>
         <option>United Kingdom</option>
         <option>France</option>
@@ -148,71 +111,196 @@
         <option>Portugal</option>
         <option>Belgium</option>
       </select>
-      <input type="text" id="nameInput" placeholder="Enter your name (optional)">
-      <button onclick="generateLink()">Generate Shareable Link</button>
+
+      <div class="row">
+        <input id="nameInput" type="text" placeholder="Enter your name (optional)" aria-label="Name">
+        <button id="generateBtn" class="generate" aria-live="polite" disabled>Generate Link</button>
+      </div>
+
+      <div class="meta">
+        <span class="hint" id="statusHint">Choose a country to enable link generation.</span>
+      </div>
     </div>
 
-    <div class="links">
-      <a class="link-tile" href="https://fwweah.github.io/time" target="_blank">
-        🌐 <span>Main Website</span>
-      </a>
-      <a class="link-tile" href="https://feds.lol/fweah" target="_blank">
-        👤 <span>feds.lol/fweah</span>
-      </a>
+    <div class="links" aria-hidden="false">
+      <a class="link-tile" href="https://fwweah.github.io/time" target="_blank" rel="noopener noreferrer">🌐 <span>fwweah.github.io/time</span></a>
+      <a class="link-tile" href="https://feds.lol/fweah" target="_blank" rel="noopener noreferrer">👤 <span>feds.lol/fweah</span></a>
     </div>
   </div>
 
   <script>
-    const timeElement = document.getElementById('time');
-    const locationElement = document.getElementById('location');
-    const greeting = document.getElementById('greeting');
+    // Country -> representative IANA timezone map (Europe)
+    const TZ = {
+      'United Kingdom': 'Europe/London',
+      'France': 'Europe/Paris',
+      'Germany': 'Europe/Berlin',
+      'Spain': 'Europe/Madrid',
+      'Italy': 'Europe/Rome',
+      'Poland': 'Europe/Warsaw',
+      'Netherlands': 'Europe/Amsterdam',
+      'Sweden': 'Europe/Stockholm',
+      'Norway': 'Europe/Oslo',
+      'Finland': 'Europe/Helsinki',
+      'Denmark': 'Europe/Copenhagen',
+      'Switzerland': 'Europe/Zurich',
+      'Austria': 'Europe/Vienna',
+      'Ireland': 'Europe/Dublin',
+      'Portugal': 'Europe/Lisbon',
+      'Belgium': 'Europe/Brussels'
+    };
+
+    const card = document.getElementById('card');
+    const timeEl = document.getElementById('time');
+    const tzLabel = document.getElementById('tzLabel');
+    const countrySelect = document.getElementById('country');
+    const nameInput = document.getElementById('nameInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const title = document.getElementById('title');
+    const sub = document.getElementById('sub');
+    const statusHint = document.getElementById('statusHint');
+
+    let selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    let viewerMode = false;
+
+    // read params
     const params = new URLSearchParams(window.location.search);
     const countryParam = params.get('country');
     const nameParam = params.get('name');
-    const card = document.getElementById('card');
 
-    const updateTime = () => {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('en-GB', { hour12: false });
-      timeElement.textContent = timeString;
-    };
-
-    const updateLocationText = () => {
-      if (countryParam) {
-        locationElement.textContent = `${countryParam}`;
-      } else {
-        locationElement.textContent = "United Kingdom";
-      }
-    };
-
-    if (nameParam) {
-      greeting.textContent = `Welcome, ${nameParam}`;
+    function setViewerMode(countryName, name){
+      viewerMode = true;
+      // display name's time
+      if (name) title.textContent = `${decodeURIComponent(name)}'s Time`;
+      sub.textContent = `${countryName} — viewer mode`;
+      // lock controls
+      countrySelect.disabled = true;
+      nameInput.disabled = true;
+      generateBtn.disabled = true;
+      // set selection visually
+      countrySelect.value = countryName;
+      nameInput.value = decodeURIComponent(name || '');
     }
 
+    function updateTZLabel(tz){
+      try{
+        const now = new Date();
+        const fmt = new Intl.DateTimeFormat('en-GB', {timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
+        // we want something like "Europe/Paris (UTC+1)"
+        const parts = fmt.formatToParts(now);
+        const tzShort = parts.find(p=>p.type==='timeZoneName')?.value || tz;
+        tzLabel.textContent = `${tz} • ${tzShort}`;
+      }catch(e){
+        tzLabel.textContent = tz;
+      }
+    }
+
+    function updateTime(){
+      try{
+        const now = new Date();
+        const opts = {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: selectedTZ};
+        const timeString = new Intl.DateTimeFormat('en-GB', opts).format(now);
+        timeEl.textContent = timeString;
+      }catch(e){
+        timeEl.textContent = '--:--:--';
+      }
+    }
+
+    // enable button when country chosen
+    countrySelect.addEventListener('change', ()=>{
+      const v = countrySelect.value;
+      if(!v){ generateBtn.disabled = true; statusHint.textContent = 'Choose a country to enable link generation.'; }
+      else{ generateBtn.disabled = false; statusHint.textContent = 'Click generate to copy a shareable link.'; }
+      if(v && TZ[v]){
+        selectedTZ = TZ[v];
+        updateTZLabel(selectedTZ);
+        updateTime();
+      }
+    });
+
+    // generate link and copy without alert. Smoothly change button text.
+    generateBtn.addEventListener('click', async ()=>{
+      const country = countrySelect.value;
+      const name = nameInput.value.trim();
+      if(!country) return;
+      const base = window.location.origin + window.location.pathname;
+      const link = `${base}?country=${encodeURIComponent(country)}${name?`&name=${encodeURIComponent(name)}`:''}`;
+      try{
+        await navigator.clipboard.writeText(link);
+        const old = generateBtn.textContent;
+        generateBtn.textContent = 'Copied!';
+        generateBtn.disabled = true;
+        setTimeout(()=>{ generateBtn.textContent = old; generateBtn.disabled = false; }, 2000);
+      }catch(e){
+        // fallback: select and prompt (rare)
+        const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }
+        finally{ ta.remove(); }
+      }
+    });
+
+    // initialize page based on params
+    (function initFromParams(){
+      if(countryParam && TZ[countryParam]){
+        selectedTZ = TZ[countryParam];
+        updateTZLabel(selectedTZ);
+        updateTime();
+        // viewer mode
+        setViewerMode(countryParam, nameParam);
+      }else{
+        // default to user's timezone on load
+        selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
+        updateTZLabel(selectedTZ);
+        // if we can infer country, preselect United Kingdom if timezone is Europe/London
+        for(const k in TZ){ if(TZ[k]===selectedTZ){ countrySelect.value = k; break; } }
+        if(countrySelect.value) generateBtn.disabled = false;
+      }
+    })();
+
+    // tick every second
     updateTime();
-    updateLocationText();
     setInterval(updateTime, 1000);
 
-    function generateLink() {
-      const country = document.getElementById('country').value;
-      const name = document.getElementById('nameInput').value;
-      if (!country) return alert('Please select a country first.');
-      const base = window.location.origin + window.location.pathname;
-      const link = `${base}?country=${encodeURIComponent(country)}${name ? `&name=${encodeURIComponent(name)}` : ''}`;
-      navigator.clipboard.writeText(link);
-      alert('Link copied to clipboard:\n' + link);
+    // 3D tilt + nice follow of inner menu (parallax)
+    card.addEventListener('mousemove', (ev)=>{
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const dx = ev.clientX - cx;
+      const dy = ev.clientY - cy;
+      const px = dx / rect.width;
+      const py = dy / rect.height;
+
+      // rotate limits
+      const rotY = px * 10; // deg
+      const rotX = -py * 10;
+      card.style.transform = `perspective(900px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+      // small parallax for inner controls
+      const controls = document.getElementById('controls');
+      const translateX = px * 14; // px
+      const translateY = py * 10;
+      controls.style.transform = `translateZ(40px) translate(${translateX}px, ${translateY}px)`;
+
+      // move subtle background radial based on mouse inside card
+      const mx = ((ev.clientX - rect.left) / rect.width) * 100;
+      const my = ((ev.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mx', mx + '%');
+      card.style.setProperty('--my', my + '%');
+    });
+
+    card.addEventListener('mouseleave', ()=>{
+      card.style.transform = '';
+      document.getElementById('controls').style.transform = 'translateZ(40px)';
+    });
+
+    // If page opened with ?country=Name&name=Name, show locked viewer mode values clearly
+    if(viewerMode){
+      // already set in initFromParams
     }
 
-    // 3D tilt effect
-    document.addEventListener('mousemove', (e) => {
-      const x = (window.innerWidth / 2 - e.pageX) / 40;
-      const y = (window.innerHeight / 2 - e.pageY) / 40;
-      card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-    });
+    // Accessibility: keyboard change
+    countrySelect.addEventListener('keyup', ()=>countrySelect.dispatchEvent(new Event('change')));
 
-    document.addEventListener('mouseleave', () => {
-      card.style.transform = `rotateY(0deg) rotateX(0deg)`;
-    });
   </script>
 </body>
 </html>
+
