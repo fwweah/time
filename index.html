@@ -39,10 +39,17 @@
       outline:none;color:var(--text);font-size:0.95rem;backdrop-filter: blur(6px);
       border:1px solid rgba(255,255,255,0.04);
     }
-    select.select{height:44px}
-    select.select option{color:#000}
+    .select-wrapper{position:relative;}
+    .options-list{
+      position:absolute;top:100%;left:0;right:0;max-height:200px;overflow-y:auto;margin-top:4px;border-radius:12px;
+      background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.06);display:none;z-index:1000;
+    }
+    .options-list div{
+      padding:8px 12px;cursor:pointer;color:var(--muted);transition:background 0.15s;
+    }
+    .options-list div:hover{background:rgba(255,255,255,0.08);color:var(--text);}
     .row{display:flex;gap:10px}
-    .row .flex{flex:1}
     .generate{
       display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;
       transition:transform 160ms ease, background 160ms ease;
@@ -69,9 +76,10 @@
     <div id="tzLabel">Loading…</div>
 
     <div class="controls" id="controls">
-      <select id="country" class="select" aria-label="Select country">
-        <option value="">Select your country</option>
-      </select>
+      <div class="select-wrapper">
+        <input type="text" id="countrySearch" class="select" placeholder="Search or select country" autocomplete="off">
+        <div id="options" class="options-list"></div>
+      </div>
       <div class="row">
         <input id="nameInput" type="text" placeholder="Enter your name (optional)">
         <button id="generateBtn" class="generate" disabled>Generate Link</button>
@@ -86,7 +94,8 @@
   </div>
 
   <script>
-    const countrySelect = document.getElementById('country');
+    const countryInput = document.getElementById('countrySearch');
+    const optionsBox = document.getElementById('options');
     const timeEl = document.getElementById('time');
     const tzLabel = document.getElementById('tzLabel');
     const generateBtn = document.getElementById('generateBtn');
@@ -97,44 +106,41 @@
     let selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     let viewerMode = false;
 
-    // country → timezone from Intl API
     const allTZs = Intl.supportedValuesOf('timeZone');
-    const countryMap = {};
-    for (const tz of allTZs) {
-      const [continent, city] = tz.split('/');
-      if (!continent || !city) continue;
-      const name = city.replace(/_/g, ' ');
-      if (!countryMap[continent]) countryMap[continent] = [];
-      countryMap[continent].push({ country: name, tz });
+    const entries = allTZs.map(tz => ({
+      tz,
+      label: tz.replace(/_/g, ' ').replace(/\//g, ' — ')
+    }));
+
+    function populateList(filter='') {
+      optionsBox.innerHTML = '';
+      const f = filter.toLowerCase();
+      const shown = entries.filter(e => e.label.toLowerCase().includes(f)).slice(0,200);
+      shown.forEach(e=>{
+        const div = document.createElement('div');
+        div.textContent = e.label;
+        div.dataset.tz = e.tz;
+        div.onclick = ()=>selectTZ(e);
+        optionsBox.appendChild(div);
+      });
+      optionsBox.style.display = shown.length ? 'block' : 'none';
     }
 
-    // Populate dropdown with continents as groups
-    for (const [continent, arr] of Object.entries(countryMap)) {
-      const group = document.createElement('optgroup');
-      group.label = continent;
-      arr.sort((a,b)=>a.country.localeCompare(b.country));
-      for (const { country, tz } of arr) {
-        const opt = document.createElement('option');
-        opt.value = tz;
-        opt.textContent = country;
-        group.appendChild(opt);
-      }
-      countrySelect.appendChild(group);
+    function selectTZ(e) {
+      selectedTZ = e.tz;
+      countryInput.value = e.label;
+      optionsBox.style.display = 'none';
+      updateTZLabel(selectedTZ);
+      updateTime();
+      generateBtn.disabled = false;
+      statusHint.textContent = 'Click generate to copy a shareable link.';
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const countryParam = params.get('country');
-    const nameParam = params.get('name');
-
-    function setViewerMode(countryName, name) {
-      viewerMode = true;
-      if (name) title.textContent = `${decodeURIComponent(name)}'s Time`;
-      sub.textContent = `${countryName} — viewer mode`;
-      countrySelect.disabled = true;
-      nameInput.disabled = true;
-      generateBtn.disabled = true;
-      nameInput.value = decodeURIComponent(name || '');
-    }
+    countryInput.addEventListener('focus', ()=>populateList());
+    countryInput.addEventListener('input', ()=>populateList(countryInput.value));
+    document.addEventListener('click', ev => {
+      if (!countryInput.contains(ev.target) && !optionsBox.contains(ev.target)) optionsBox.style.display = 'none';
+    });
 
     function updateTZLabel(tz) {
       try {
@@ -154,21 +160,10 @@
       } catch { timeEl.textContent = '--:--:--'; }
     }
 
-    countrySelect.addEventListener('change', () => {
-      const tz = countrySelect.value;
-      if (!tz) { generateBtn.disabled = true; statusHint.textContent = 'Choose a country to enable link generation.'; return; }
-      selectedTZ = tz;
-      generateBtn.disabled = false;
-      updateTZLabel(selectedTZ);
-      updateTime();
-      statusHint.textContent = 'Click generate to copy a shareable link.';
-    });
-
     generateBtn.addEventListener('click', async () => {
-      const tz = countrySelect.value;
       const name = nameInput.value.trim();
-      if (!tz) return;
-      const countryName = tz.split('/').pop().replace(/_/g,' ');
+      if (!selectedTZ) return;
+      const countryName = selectedTZ.split('/').pop().replace(/_/g,' ');
       const base = window.location.origin + window.location.pathname;
       const link = `${base}?country=${encodeURIComponent(countryName)}${name?`&name=${encodeURIComponent(name)}`:''}`;
       try {
@@ -183,30 +178,36 @@
       }
     });
 
-    // Init from params
-    (function initFromParams(){
-      if (countryParam) {
-        const matchTZ = allTZs.find(z=>z.toLowerCase().includes(countryParam.toLowerCase().replace(/ /g,'_')));
-        if (matchTZ) {
-          selectedTZ = matchTZ;
-          countrySelect.value = selectedTZ;
-          updateTZLabel(selectedTZ);
-          updateTime();
-          setViewerMode(countryParam, nameParam);
-        }
-      } else {
-        selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const params = new URLSearchParams(window.location.search);
+    const countryParam = params.get('country');
+    const nameParam = params.get('name');
+
+    if (countryParam) {
+      const matchTZ = allTZs.find(z=>z.toLowerCase().includes(countryParam.toLowerCase().replace(/ /g,'_')));
+      if (matchTZ) {
+        selectedTZ = matchTZ;
+        const match = entries.find(e=>e.tz===matchTZ);
+        countryInput.value = match.label;
         updateTZLabel(selectedTZ);
         updateTime();
-        countrySelect.value = selectedTZ;
+        viewerMode = true;
+        if (nameParam) title.textContent = `${decodeURIComponent(nameParam)}'s Time`;
+        sub.textContent = `${countryParam} — viewer mode`;
+        countryInput.disabled = nameInput.disabled = generateBtn.disabled = true;
       }
-    })();
+    } else {
+      selectedTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const match = entries.find(e=>e.tz===selectedTZ);
+      countryInput.value = match ? match.label : selectedTZ;
+      updateTZLabel(selectedTZ);
+      updateTime();
+    }
 
     setInterval(updateTime, 1000);
 
-    // 3D tilt
+    // Tilt
     const card = document.getElementById('card');
-    card.addEventListener('mousemove', (ev)=>{
+    card.addEventListener('mousemove', ev=>{
       const rect = card.getBoundingClientRect();
       const px = (ev.clientX - rect.left - rect.width/2)/rect.width;
       const py = (ev.clientY - rect.top - rect.height/2)/rect.height;
@@ -216,8 +217,7 @@
       card.style.setProperty('--my', ((ev.clientY-rect.top)/rect.height*100)+'%');
     });
     card.addEventListener('mouseleave', ()=>{
-      card.style.transform='';
-      document.getElementById('controls').style.transform='translateZ(40px)';
+      card.style.transform=''; document.getElementById('controls').style.transform='translateZ(40px)';
     });
   </script>
 </body>
