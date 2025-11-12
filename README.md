@@ -5,8 +5,8 @@ it's more of a bio feature but has more features on the way so it can become as 
 creator credits: fwweah
 latest version: v4
 
-### V4 updates
+### V4.1 updates
 *The latest version has released and is now public, it contains*
-1. Support for all countries
-2. Updated GUI
-3. Optimised for better performance
+- more support for all countries
+- search feature
+- accurate timezones
