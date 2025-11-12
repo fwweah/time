@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time Portal</title>
+  <link rel="icon" href="https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea5489be478613512121_43.png" type="image/png" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0a0a0a 0%, #000 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: white;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+      width: 400px;
+      max-width: 90vw;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transform-style: preserve-3d;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      opacity: 0.8;
+      letter-spacing: 1px;
+    }
+
+    #time {
+      font-size: 2.8rem;
+      font-weight: 600;
+      margin: 15px 0;
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    #location {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    .input-group {
+      margin-top: 25px;
+    }
+
+    select, input {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 25px;
+    }
+
+    .link-tile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      text-decoration: none;
+      color: white;
+      font-size: 0.9rem;
+      transition: 0.3s ease;
+    }
+
+    .link-tile:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .link-tile img {
+      width: 18px;
+      height: 18px;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); }
+      to { box-shadow: 0 0 30px rgba(255, 255, 255, 0.25); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1 id="greeting">Welcome to the Time Portal</h1>
+    <div id="time">--:--:--</div>
+    <div id="location">Loading location...</div>
+
+    <div class="input-group">
+      <select id="country">
+        <option value="">Select your European country</option>
+        <option>United Kingdom</option>
+        <option>France</option>
+        <option>Germany</option>
+        <option>Spain</option>
+        <option>Italy</option>
+        <option>Poland</option>
+        <option>Netherlands</option>
+        <option>Sweden</option>
+        <option>Norway</option>
+        <option>Finland</option>
+        <option>Denmark</option>
+        <option>Switzerland</option>
+        <option>Austria</option>
+        <option>Ireland</option>
+        <option>Portugal</option>
+        <option>Belgium</option>
+      </select>
+      <input type="text" id="nameInput" placeholder="Enter your name (optional)">
+      <button onclick="generateLink()">Generate Shareable Link</button>
+    </div>
+
+    <div class="links">
+      <a class="link-tile" href="https://fwweah.github.io/time" target="_blank">
+        🌐 <span>Main Website</span>
+      </a>
+      <a class="link-tile" href="https://feds.lol/fweah" target="_blank">
+        👤 <span>feds.lol/fweah</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const timeElement = document.getElementById('time');
+    const locationElement = document.getElementById('location');
+    const greeting = document.getElementById('greeting');
+    const params = new URLSearchParams(window.location.search);
+    const countryParam = params.get('country');
+    const nameParam = params.get('name');
+    const card = document.getElementById('card');
+
+    const updateTime = () => {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-GB', { hour12: false });
+      timeElement.textContent = timeString;
+    };
+
+    const updateLocationText = () => {
+      if (countryParam) {
+        locationElement.textContent = `${countryParam}`;
+      } else {
+        locationElement.textContent = "United Kingdom";
+      }
+    };
+
+    if (nameParam) {
+      greeting.textContent = `Welcome, ${nameParam}`;
+    }
+
+    updateTime();
+    updateLocationText();
+    setInterval(updateTime, 1000);
+
+    function generateLink() {
+      const country = document.getElementById('country').value;
+      const name = document.getElementById('nameInput').value;
+      if (!country) return alert('Please select a country first.');
+      const base = window.location.origin + window.location.pathname;
+      const link = `${base}?country=${encodeURIComponent(country)}${name ? `&name=${encodeURIComponent(name)}` : ''}`;
+      navigator.clipboard.writeText(link);
+      alert('Link copied to clipboard:\n' + link);
+    }
+
+    // 3D tilt effect
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 40;
+      const y = (window.innerHeight / 2 - e.pageY) / 40;
+      card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+    });
+  </script>
+</body>
+</html>
