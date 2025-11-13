@@ -3,10 +3,10 @@ time is a project of mine which i developed. it's built to be basic, work simply
 it's more of a bio feature but has more features on the way so it can become as customised as possible - no payment - no fees. 
 
 creator credits: fwweah
-latest version: v4
+latest version: v5
 
-### V4.1 updates
-*The latest version has released and is now public, it contains*
-- more support for all countries
-- search feature
-- accurate timezones
+### V5 updates
+*The latest version has released and is now public.*
+- Unix Timestamp support
+- Fixed certain errors
+- Unix Timestamp has been given global access
