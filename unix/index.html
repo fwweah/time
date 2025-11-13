@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unix Portal</title>
+  <link rel="icon" href="https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea5489be478613512121_43.png" type="image/png" />
+  <style>
+    :root {
+      --glass: rgba(255, 255, 255, 0.06);
+      --glass-strong: rgba(255, 255, 255, 0.12);
+      --accent: rgba(130, 180, 255, 0.12);
+      --text: #FFFFFF;
+      --muted: rgba(255, 255, 255, 0.7);
+      --radius: 22px;
+      --card-w: 420px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 10%, #071026 0%, #000 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .card {
+      width: var(--card-w);
+      max-width: 96vw;
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(60,130,255,0.04) inset;
+      backdrop-filter: blur(12px) saturate(120%);
+      transform-style: preserve-3d;
+      transition: transform 200ms ease, box-shadow 200ms ease;
+      position: relative;
+      overflow: visible;
+    }
+
+    .glow {
+      position: absolute;
+      inset: -40px;
+      border-radius: 30px;
+      filter: blur(30px);
+      pointer-events: none;
+      background: radial-gradient(closest-side, rgba(90,140,255,0.08), transparent 40%);
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.4px;
+    }
+
+    #sub {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transform: translateZ(40px);
+      transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .select,
+    input[type="datetime-local"] {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      outline: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.04);
+      width: 100%;
+      transition: border 0.2s ease, background 0.2s ease;
+    }
+
+    .select:hover,
+    input[type="datetime-local"]:hover {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+    }
+
+    select.select {
+      height: 44px;
+      background-image: none;
+    }
+
+    select.select option {
+      color: #000;
+    }
+
+    .output {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    /* ---- Custom Scrollbar (Glassy Glow) ---- */
+    .output::-webkit-scrollbar {
+      width: 10px;
+    }
+    .output::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+    }
+    .output::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(140,180,255,0.35), rgba(100,150,255,0.25));
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(140,180,255,0.2);
+    }
+    .output::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(160,200,255,0.45), rgba(110,160,255,0.35));
+      box-shadow: 0 0 15px rgba(140,180,255,0.35);
+    }
+    .output {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(130,180,255,0.35) rgba(255,255,255,0.03);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      align-items: center;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-family: monospace;
+      gap: 10px;
+    }
+
+    .row span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .row small {
+      color: var(--muted);
+      font-size: 0.8rem;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .copy-btn {
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      width: 70px;
+      text-align: center;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 20px; border-radius: 18px; }
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: -30%;
+      top: -30%;
+      width: 160%;
+      height: 160%;
+      pointer-events: none;
+      background: radial-gradient(600px 300px at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.02), transparent 12%);
+      border-radius: 30px;
+      transition: background-position 220ms linear;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="glow"></div>
+    <h1>Discord Timestamp Portal</h1>
+    <div id="sub">Convert any date/time into Discord-ready formats</div>
+    <div id="sub">Made by @fwweah</div>
+
+    <div class="controls">
+      <input id="datetime" type="datetime-local" />
+      <select id="timezone" class="select"></select>
+    </div>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const tzSelect = document.getElementById('timezone');
+    const dtInput = document.getElementById('datetime');
+    const output = document.getElementById('output');
+    const formats = [
+      { code: 't', label: 'Short Time' },
+      { code: 'T', label: 'Long Time' },
+      { code: 'f', label: 'Short Date/Time' },
+      { code: 'F', label: 'Long Date/Time' },
+      { code: 'R', label: 'Relative Time' }
+    ];
+
+    Intl.supportedValuesOf('timeZone').forEach(tz => {
+      const opt = document.createElement('option');
+      opt.value = tz;
+      opt.textContent = tz;
+      tzSelect.appendChild(opt);
+    });
+
+    const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    tzSelect.value = userTZ;
+
+    function render() {
+      output.innerHTML = '';
+      const datetime = dtInput.value;
+      if (!datetime) return;
+
+      const tz = tzSelect.value;
+      const localTime = new Date(datetime);
+      const utcTime = new Date(localTime.toLocaleString('en-US', { timeZone: 'UTC' }));
+      const unix = Math.floor(utcTime.getTime() / 1000);
+
+      formats.forEach(f => {
+        const discord = `<t:${unix}:${f.code}>`;
+        let preview;
+        try {
+          if (f.code === 'R') {
+            const diff = Math.floor((localTime - new Date()) / 1000);
+            if (diff > 0) preview = `in ${Math.round(diff / 3600)}h`;
+            else preview = `${Math.abs(Math.round(diff / 3600))}h ago`;
+          } else {
+            preview = new Intl.DateTimeFormat('en-GB', {
+              timeZone: tz,
+              dateStyle: f.code === 'F' ? 'full' : f.code === 'f' ? 'medium' : undefined,
+              timeStyle: (f.code === 't' || f.code === 'T' || f.code === 'f' || f.code === 'F') ? (f.code === 'T' ? 'long' : 'short') : undefined
+            }).format(localTime);
+          }
+        } catch { preview = '—'; }
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `
+          <span>${discord}</span>
+          <small>${preview}</small>
+          <button class="copy-btn">Copy</button>
+        `;
+        const btn = row.querySelector('.copy-btn');
+        btn.onclick = async () => {
+          await navigator.clipboard.writeText(discord);
+          const old = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.disabled = true;
+          setTimeout(() => {
+            btn.textContent = old;
+            btn.disabled = false;
+          }, 2000);
+        };
+        output.appendChild(row);
+      });
+    }
+
+    dtInput.addEventListener('change', render);
+    tzSelect.addEventListener('change', render);
+    render();
+
+    const card = document.getElementById('card');
+    card.addEventListener('mousemove', ev => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = ev.clientX - cx;
+      const dy = ev.clientY - cy;
+      const px = dx / rect.width;
+      const py = dy / rect.height;
+      const rotY = px * 10;
+      const rotX = -py * 10;
+      card.style.transform = `perspective(900px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+      card.style.setProperty('--mx', ((ev.clientX - rect.left) / rect.width) * 100 + '%');
+      card.style.setProperty('--my', ((ev.clientY - rect.top) / rect.height) * 100 + '%');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  </script>
+</body>
+</html>
